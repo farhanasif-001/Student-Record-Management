@@ -9,8 +9,21 @@ UI = r"""===== STUDENT RECORD MANAGEMENT SYSTEM =====
 5. Delete Student
 6. Exit"""
 
+
+def show_student_details(student):
+    """Prints the detail of the student dictionary."""
+    
+    print("\n-------------------------")
+    print(f"Student ID: {student['student_id']}")
+    print(f"Name: {student['name']}")
+    print(f"Age: {student['age']}")
+    print(f"Course: {student['course']}")
+    print(f"Marks: {student['marks']}")
+    print("-------------------------")
+
+
 def get_choice():
-    '''get user input and returns it.'''
+    '''Get user input and return it.'''
     while True:
         try:
             user_input = int(input("Enter Your Choice. (1-6): "))
@@ -19,34 +32,37 @@ def get_choice():
             print("Please Provide numerical inputs.\n")
 
 
+def save_students(students_list):
+    """Saves/Updates the student's data in the json file"""
+
+    with open("./students.json", "w") as f:
+        json.dump(students_list, f, indent=4)
+
+
 def load_students():
-    '''Load the students from json file if file exists otherwise create new json file.'''
+    '''Load the students from json file if file exists otherwise creates a new json file.'''
 
     try:
         with open("./students.json", mode="r") as f:
-            data = json.load(f)
+            students = json.load(f)
 
     except FileNotFoundError:
         print("\nFile named 'students.json' not found.\nCreating a new json file...\n")
 
-        data = []
-
-        with open("./students.json", mode="w") as f:
-            json.dump(data,f)
-            time.sleep(0.5)
-
+        students = []
+        save_students(students_list= students)
         time.sleep(0.5)
         print("students.json is successfully created\n")
 
     except json.JSONDecodeError:
         print("\nstudents.json is empty or contains invalid JSON.")
 
-        data = []
-
-        with open("students.json", "w") as f:
-            json.dump(data, f)
-
-    return data
+        students = []
+        save_students(students_list= students)
+        time.sleep(0.5)
+        print("students.json has been successfully modified\n")
+        
+    return students
 
 
 def add_student():
@@ -54,15 +70,15 @@ def add_student():
 
     students = load_students()
 
-    while True:                                                       # Name
+    while True:                                                           # Name
         name = input("\nWhat is the name of the student?: ").strip().title()
         if name:
             break
 
         print("Name can't be empty.")
 
-    while True:                                                       # Course
-        course = input("Enter the course name of the student: ").strip().title()
+    while True:                                                           # Course
+        course = input("\nEnter the course name of the student: ").strip().title()
 
         if course:
             break
@@ -76,7 +92,7 @@ def add_student():
     else:
         student_id = 101
 
-    while True:                                                       # Age of the Student
+    while True:                                                           # Age of the Student
         try: 
             age = int(input("\nWhat is the age of the student?: "))
 
@@ -106,27 +122,83 @@ def add_student():
             print("Please provide numerical value!")
 
     new_student = {
-        "student_id" : student_id,
-        "name" : name,
-        "age" : age,
-        "course" : course,
-        "marks" : marks
+        "student_id": student_id,
+        "name": name,
+        "age": age,
+        "course": course,
+        "marks": marks
     }
 
     students.append(new_student)
 
-    with open("./students.json", "w") as f:
-        json.dump(students, f, indent=4)
+    save_students(students_list= students)
 
-    print(f"\n Student '{name}' added sucessfully.")
+    print(f"\nStudent '{name}' added successfully.")
 
 
 def view_students():
-    print("View Students feature coming soon")
+    students = load_students()
+
+    if not students:
+        print("\nNo student records found.\n")
+        return
+
+    print("\n===== ALL STUDENTS =====")
+
+    for student in students:
+        show_student_details(student)
 
 
 def search_student():
-    print("Search Student feature coming soon")
+    students = load_students()
+
+    if not students:
+        print("\nNo student records found.\n")
+        return
+
+    while True:
+        search_by = input("How do you want to search ('student id', 'name', 'course')?: ").strip().lower()
+
+        if search_by in ["student id", "name", "course"]:
+            break
+
+        print("Please choose among 'student id', 'name', 'course'.")
+
+    # Search using student id
+    if search_by == 'student id':
+        while True:
+            try:
+                student_id = int(input(f"\nEnter the {search_by}: "))
+
+                for student in students:
+                    if student["student_id"] == student_id:
+                        print(f"\n===== DETAILS OF THE STUDENT =====\n")
+                        show_student_details(student)
+                        return
+
+                else:
+                    print("\nStudent's record not found. Try again!\n")
+
+            except ValueError:
+                print("Please provide numerical inputs!")
+
+    else:
+        # Search using name and course
+        while True:
+            found = False
+            field_name = input(f"\nEnter the Student's {search_by}: ").strip().title()
+
+            for student in students:
+                if student[search_by] == field_name:
+                    show_student_details(student)
+                    found = True
+
+
+            if not found:
+                print("\nStudent's record not found. Try again!\n")
+            else:
+                return
+            
 
 
 def update_student():
@@ -141,20 +213,21 @@ def exit_program():
     print("Exiting Program...")
     time.sleep(0.5)
 
-field = {
-    1 : add_student,
-    2 : view_students,
-    3 : search_student,
-    4 : update_student,
-    5 : delete_student,
+menu_options = {
+    1: add_student,
+    2: view_students,
+    3: search_student,
+    4: update_student,
+    5: delete_student,
 }
 
 while True:
+    print("\n" * 4)
     print(UI)
     choice = get_choice()
     
-    if choice in field:
-        field[choice]()
+    if choice in menu_options:
+        menu_options[choice]()
     elif choice == 6:
         exit_program()
         break
