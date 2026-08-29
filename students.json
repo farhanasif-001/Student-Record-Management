@@ -1,16 +1,16 @@
 [
     {
         "student_id": 101,
-        "name": "Farhan",
+        "name": "Farhan Asif",
         "age": 22,
         "course": "Csda",
         "marks": 45
     },
     {
         "student_id": 102,
-        "name": "Rahul Kumr",
+        "name": "Rahul Kumar",
         "age": 21,
         "course": "Csda",
-        "marks": 100
+        "marks": 59
     }
 ]

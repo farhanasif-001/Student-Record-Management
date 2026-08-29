@@ -9,6 +9,82 @@ UI = r"""===== STUDENT RECORD MANAGEMENT SYSTEM =====
 5. Delete Student
 6. Exit"""
 
+MENU_DETAILS = r"""
+1. Name
+2. Age
+3. Course
+4. Marks
+"""
+
+
+def get_name(prompt="\nWhat is the name of the student?: "):
+    """Returns name"""
+
+    while True:
+        name = input(prompt).strip().title()
+        
+        if name:
+            break
+
+        print("Name can't be empty.")
+
+    return name
+
+
+def get_age(prompt="\nWhat is the age of the student?: "):
+    """Returns age successfully in 'int' type"""
+
+    while True:
+        try: 
+            age = int(input(prompt))
+
+            if age <= 0:
+                print("Age must be greater than 0.")
+                continue
+            elif age > 70:
+                print("Please provide reasonable age!")
+                continue
+
+            break
+
+        except ValueError:
+            print("Please provide numerical value!")
+
+    return age
+
+
+def get_course_name(prompt="\nEnter the course name of the student: "):
+    """Returns name"""
+
+    while True:
+        course = input(prompt).strip().title()
+
+        if course:
+            break
+
+        print("Course can't be empty.")
+
+    return course
+
+
+def get_marks(prompt="\nWhat marks did the student get?: "):
+    """Returns marks successfully in 'int' type"""
+
+    while True:
+        try:
+            marks = int(input(prompt))
+
+            if not 0 <= marks <= 100:
+                print("Marks must be between 0 and 100!")
+                continue
+
+            break
+
+        except ValueError:
+            print("Please provide numerical value!")
+
+    return marks
+
 
 def show_student_details(student):
     """Prints the detail of the student dictionary."""
@@ -26,7 +102,7 @@ def get_choice():
     '''Get user input and return it.'''
     while True:
         try:
-            user_input = int(input("Enter Your Choice. (1-6): "))
+            user_input = int(input("\nEnter Your Choice. (1-6): "))
             return user_input
         except ValueError:
             print("Please Provide numerical inputs.\n")
@@ -65,25 +141,28 @@ def load_students():
     return students
 
 
+def create_student(student_id, name, age, course, marks):
+    """Creates a student"""
+
+    new_student = {
+    "student_id": student_id,
+    "name": name,
+    "age": age,
+    "course": course,
+    "marks": marks
+}
+    return new_student
+
+
 def add_student():
     '''Add new student to json file.'''
 
     students = load_students()
 
-    while True:                                                           # Name
-        name = input("\nWhat is the name of the student?: ").strip().title()
-        if name:
-            break
-
-        print("Name can't be empty.")
-
-    while True:                                                           # Course
-        course = input("\nEnter the course name of the student: ").strip().title()
-
-        if course:
-            break
-
-        print("Course can't be empty.")
+    name = get_name()                                                     # Name
+    age = get_age()                                                       # Age of the Student
+    course = get_course_name()                                            # Course
+    marks = get_marks()                                                   # Marks
 
     if students:                                                          # Student ID
         # student_id = students[-1]["student_id"] + 1
@@ -92,47 +171,9 @@ def add_student():
     else:
         student_id = 101
 
-    while True:                                                           # Age of the Student
-        try: 
-            age = int(input("\nWhat is the age of the student?: "))
-
-            if age <= 0:
-                print("Age must be greater than 0.")
-                continue
-            elif age > 70:
-                print("Please provide reasonable age!")
-                continue
-
-            break
-
-        except ValueError:
-            print("Please provide numerical value!")
-
-    while True:
-        try:
-            marks = int(input("\nWhat marks did the student get?: "))
-
-            if not 0 <= marks <= 100:
-                print("Marks must be between 0 and 100!")
-                continue
-
-            break
-
-        except ValueError:
-            print("Please provide numerical value!")
-
-    new_student = {
-        "student_id": student_id,
-        "name": name,
-        "age": age,
-        "course": course,
-        "marks": marks
-    }
-
+    new_student = create_student(student_id, name, age, course, marks)
     students.append(new_student)
-
     save_students(students_list= students)
-
     print(f"\nStudent '{name}' added successfully.")
 
 
@@ -200,13 +241,81 @@ def search_student():
                 return
             
 
-
 def update_student():
-    print("Update Student feature coming soon")
+    students = load_students()
+
+    if not students:
+        print("\nNo Student records found.\n")
+        return
+
+    while True:
+        student_to_update = None
+
+        try:
+            student_id = int(input("\nEnter Student ID of the student to update the details: "))
+
+            for student in students:
+                if student_id == student["student_id"]:
+                    student_to_update = student
+                    print("\n===== CURRENT STUDENT DETAILS =====")
+                    show_student_details(student_to_update)
+                    break
+
+            if student_to_update is None:
+                print("\nStudent's record not found.\n")
+                time.sleep(0.5)
+                continue
+
+            break
+
+        except ValueError:
+            print("\nPlease provide numerical value.\n")
+            time.sleep(0.5)
+
+    while True:
+        try:
+            what_to_update = int(input(f"{MENU_DETAILS}\nWhat do you want to update? Type(1-4)"))
+
+            if 1 <= what_to_update <= 4:
+                break
+
+            else:
+                print(f"\nPlease type an interger between 1 to 4{MENU_DETAILS}")
+
+        except ValueError:
+            print("\nPlease provide numerical value.\n")
+            time.sleep(0.5)
+
+    if what_to_update == 1:
+        name = get_name(prompt="\nEnter the updated name: ")
+        student_to_update["name"] = name
+        print("\nName updated successfully.")
+        time.sleep(0.5)
+
+    elif what_to_update == 2:
+        age = get_age("\nEnter the updated age: ")
+        student_to_update["age"] = age
+        print("\nAge updated successfully.")
+        time.sleep(0.5)
+
+    elif what_to_update == 3:
+        course = get_course_name(prompt="\nEnter the updated course: ")
+        student_to_update["course"] = course
+        print("\nCourse updated successfully.")
+        time.sleep(0.5)
+
+    elif what_to_update == 4:
+        marks = get_marks(prompt="\nEnter the updated marks: ")
+        student_to_update["marks"] = marks
+        print("\nMarks updated successfully.")
+        time.sleep(0.5)
+
+    save_students(students)
 
 
 def delete_student():
-    print("Delete Student feature coming soon")
+    pass
+
 
 
 def exit_program():
