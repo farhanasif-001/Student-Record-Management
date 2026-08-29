@@ -17,7 +17,7 @@ MENU_DETAILS = r"""
 
 
 def get_name(prompt="\nWhat is the name of the student?: "):
-    """Returns name"""
+    """Return a validated student name."""
 
     while True:
         name = input(prompt).strip().title()
@@ -31,7 +31,7 @@ def get_name(prompt="\nWhat is the name of the student?: "):
 
 
 def get_age(prompt="\nWhat is the age of the student?: "):
-    """Returns age successfully in 'int' type"""
+    """Return a validated student age as an integer."""
 
     while True:
         try: 
@@ -53,7 +53,7 @@ def get_age(prompt="\nWhat is the age of the student?: "):
 
 
 def get_course(prompt="\nEnter the course name of the student: "):
-    """Returns name"""
+    """Returns a validated course name."""
 
     while True:
         course = input(prompt).strip().title()
@@ -67,7 +67,7 @@ def get_course(prompt="\nEnter the course name of the student: "):
 
 
 def get_marks(prompt="\nWhat marks did the student get?: "):
-    """Returns marks successfully in 'int' type"""
+    """Return validated student marks as an interger"""
 
     while True:
         try:
@@ -86,7 +86,7 @@ def get_marks(prompt="\nWhat marks did the student get?: "):
 
 
 def show_student_details(student):
-    """Prints the detail of the student dictionary."""
+    """Display details of the student."""
     
     print("\n-------------------------")
     print(f"Student ID: {student['student_id']}")
@@ -98,7 +98,7 @@ def show_student_details(student):
 
 
 def get_choice():
-    '''Get user input and return it.'''
+    """Return the validated user input in integer."""
     while True:
         try:
             user_input = int(input("\nEnter Your Choice. (1-6): "))
@@ -107,15 +107,15 @@ def get_choice():
             print("Please Provide numerical inputs.\n")
 
 
-def save_students(students_list):
+def save_students(students):
     """Saves/Updates the student's data in the json file"""
 
     with open("./students.json", "w") as f:
-        json.dump(students_list, f, indent=4)
+        json.dump(students, f, indent=4)
 
 
 def load_students():
-    '''Load the students from json file if file exists otherwise creates a new json file.'''
+    """Load student records from the JSON file."""
 
     try:
         with open("./students.json", mode="r") as f:
@@ -125,56 +125,51 @@ def load_students():
         print("\nFile named 'students.json' not found.\nCreating a new json file...\n")
 
         students = []
-        save_students(students_list= students)
+        save_students(students= students)
         print("students.json is successfully created\n")
 
     except json.JSONDecodeError:
         print("\nstudents.json is empty or contains invalid JSON.")
 
         students = []
-        save_students(students_list= students)
+        save_students(students= students)
         print("students.json has been successfully modified\n")
         
     return students
 
 
-def create_student(student_id, name, age, course, marks):
-    """Creates a student"""
-
-    new_student = {
-    "student_id": student_id,
-    "name": name,
-    "age": age,
-    "course": course,
-    "marks": marks
-}
-    return new_student
-
-
 def add_student():
-    '''Add new student to json file.'''
+    '''Add a validated new student to the json file.'''
 
     students = load_students()
 
-    name = get_name()                                                     # Name
-    age = get_age()                                                       # Age of the Student
-    course = get_course()                                            # Course
-    marks = get_marks()                                                   # Marks
+    name = get_name()
+    age = get_age()
+    course = get_course()
+    marks = get_marks()
 
-    if students:                                                          # Student ID
-        # student_id = students[-1]["student_id"] + 1
+    if students:
         student_id = max(student["student_id"] for student in students) + 1
 
     else:
         student_id = 101
 
-    new_student = create_student(student_id, name, age, course, marks)
+    new_student = {
+        "student_id": student_id,
+        "name": name,
+        "age": age,
+        "course": course,
+        "marks": marks
+    }
+
     students.append(new_student)
-    save_students(students_list= students)
+    save_students(students= students)
     print(f"\nStudent '{name}' added successfully.")
 
 
 def view_students():
+    """Display all student records."""
+
     students = load_students()
 
     if not students:
@@ -188,6 +183,8 @@ def view_students():
 
 
 def search_student():
+    """Display details of the student using name, course, student id."""
+
     students = load_students()
 
     if not students:
@@ -224,13 +221,13 @@ def search_student():
         # Search using name and course
         while True:
             found = False
-            matching_student = []
+            matching_students = []
 
             field_name = input(f"\nEnter the Student's {search_by}: ").strip().title()
 
             for student in students:
                 if student[search_by] == field_name:
-                    matching_student.append(student)
+                    matching_students.append(student)
                     found = True
 
             if not found:
@@ -238,13 +235,15 @@ def search_student():
             else:
                 print(f"\n===== {field_name}'s details =====")
 
-                for student in matching_student:
+                for student in matching_students:
                     show_student_details(student)
 
                 return
             
 
 def update_student():
+    """Update details of the student using student id."""
+
     students = load_students()
 
     if not students:
@@ -310,7 +309,7 @@ def update_student():
 
 
 def delete_student():
-    """Deletes the student's record from json file."""
+    """Deletes the student's record from json file using student id."""
 
     students = load_students()
 
@@ -363,7 +362,11 @@ def delete_student():
 
 
 def exit_program():
-    print("Exiting Program...")
+    """Exit the student-record-management program."""
+
+    print("Program exited successfully.")
+
+    return
 
 menu_options = {
     1: add_student,
