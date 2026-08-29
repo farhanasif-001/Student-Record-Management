@@ -195,15 +195,15 @@ def search_student():
         return
 
     while True:
-        search_by = input("How do you want to search ('student id', 'name', 'course')?: ").strip().lower()
+        search_by = input("\nHow do you want to search ('student id', 'name', 'course')?: ").strip().lower()
 
-        if search_by in ["student id", "name", "course"]:
+        if search_by in ["student id", "studentid", "name", "course"]:
             break
 
         print("Please choose among 'student id', 'name', 'course'.")
 
     # Search using student id
-    if search_by == 'student id':
+    if search_by == 'student id' or search_by == 'studentid':
         while True:
             try:
                 student_id = int(input(f"\nEnter the {search_by}: "))
@@ -224,17 +224,23 @@ def search_student():
         # Search using name and course
         while True:
             found = False
+            matching_student = []
+
             field_name = input(f"\nEnter the Student's {search_by}: ").strip().title()
 
             for student in students:
                 if student[search_by] == field_name:
-                    show_student_details(student)
+                    matching_student.append(student)
                     found = True
 
-
             if not found:
-                print("\nStudent's record not found. Try again!\n")
+                print(f"\n{field_name}'s record not found. Try again!\n")
             else:
+                print(f"\n===== {field_name}'s details =====")
+
+                for student in matching_student:
+                    show_student_details(student)
+
                 return
             
 
@@ -269,13 +275,13 @@ def update_student():
 
     while True:
         try:
-            what_to_update = int(input(f"{MENU_DETAILS}\nWhat do you want to update? Type(1-4)"))
+            what_to_update = int(input(f"{MENU_DETAILS}\nWhat do you want to update? Type(1-4): "))
 
             if 1 <= what_to_update <= 4:
                 break
 
             else:
-                print(f"\nPlease type an interger between 1 to 4{MENU_DETAILS}")
+                print(f"\nPlease type an integer between 1 to 4{MENU_DETAILS}")
 
         except ValueError:
             print("\nPlease provide numerical value.\n")
@@ -316,7 +322,7 @@ def delete_student():
         student_to_delete = None
 
         try:
-            student_id = int(input(f"\nEnter the student id of the student whose records you wish to delete: "))
+            student_id = int(input(f"\nEnter the 'Student ID' of the student whose records you wish to delete: "))
         except ValueError:
             print("\nPlease provide numerical value.\n")
             continue

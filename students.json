@@ -12,5 +12,19 @@
         "age": 21,
         "course": "Csda",
         "marks": 59
+    },
+    {
+        "student_id": 103,
+        "name": "Ganpat Lal Seth",
+        "age": 22,
+        "course": "Csda",
+        "marks": 66
+    },
+    {
+        "student_id": 104,
+        "name": "Shashank Shahi",
+        "age": 21,
+        "course": "Mba",
+        "marks": 79
     }
 ]
