@@ -1,4 +1,3 @@
-import time
 import json
 UI = r"""===== STUDENT RECORD MANAGEMENT SYSTEM =====
 
@@ -53,7 +52,7 @@ def get_age(prompt="\nWhat is the age of the student?: "):
     return age
 
 
-def get_course_name(prompt="\nEnter the course name of the student: "):
+def get_course(prompt="\nEnter the course name of the student: "):
     """Returns name"""
 
     while True:
@@ -127,7 +126,6 @@ def load_students():
 
         students = []
         save_students(students_list= students)
-        time.sleep(0.5)
         print("students.json is successfully created\n")
 
     except json.JSONDecodeError:
@@ -135,7 +133,6 @@ def load_students():
 
         students = []
         save_students(students_list= students)
-        time.sleep(0.5)
         print("students.json has been successfully modified\n")
         
     return students
@@ -161,7 +158,7 @@ def add_student():
 
     name = get_name()                                                     # Name
     age = get_age()                                                       # Age of the Student
-    course = get_course_name()                                            # Course
+    course = get_course()                                            # Course
     marks = get_marks()                                                   # Marks
 
     if students:                                                          # Student ID
@@ -263,14 +260,12 @@ def update_student():
 
             if student_to_update is None:
                 print("\nStudent's record not found.\n")
-                time.sleep(0.5)
                 continue
 
             break
 
         except ValueError:
             print("\nPlease provide numerical value.\n")
-            time.sleep(0.5)
 
     while True:
         try:
@@ -284,43 +279,85 @@ def update_student():
 
         except ValueError:
             print("\nPlease provide numerical value.\n")
-            time.sleep(0.5)
 
     if what_to_update == 1:
         name = get_name(prompt="\nEnter the updated name: ")
         student_to_update["name"] = name
         print("\nName updated successfully.")
-        time.sleep(0.5)
 
     elif what_to_update == 2:
         age = get_age("\nEnter the updated age: ")
         student_to_update["age"] = age
         print("\nAge updated successfully.")
-        time.sleep(0.5)
 
     elif what_to_update == 3:
-        course = get_course_name(prompt="\nEnter the updated course: ")
+        course = get_course(prompt="\nEnter the updated course: ")
         student_to_update["course"] = course
         print("\nCourse updated successfully.")
-        time.sleep(0.5)
 
     elif what_to_update == 4:
         marks = get_marks(prompt="\nEnter the updated marks: ")
         student_to_update["marks"] = marks
         print("\nMarks updated successfully.")
-        time.sleep(0.5)
 
     save_students(students)
 
 
 def delete_student():
-    pass
+    """Deletes the student's record from json file."""
 
+    students = load_students()
+
+    if not students:
+        print("\nNo Student records found.\n")
+        return
+
+    while True:
+        student_to_delete = None
+
+        try:
+            student_id = int(input(f"\nEnter the student id of the student whose records you wish to delete: "))
+        except ValueError:
+            print("\nPlease provide numerical value.\n")
+            continue
+
+        for student in students:
+            if student_id == student["student_id"]:
+                student_to_delete = student
+                break
+
+        if student_to_delete is None:
+            print("\nStudent's record not found.\n")
+            continue
+
+
+        print("===== STUDENT TO DELETE =====")
+        show_student_details(student_to_delete)
+
+        break
+
+    while True:
+        deletion_confirmation = input("Are you sure you want to delete this student? (Y/N): ").strip().lower()
+
+        if deletion_confirmation == 'y':
+            students.remove(student_to_delete)
+
+            print(f"\nStudent '{student_to_delete['name']}' deleted successfully.")
+
+            save_students(students)
+            break
+
+        elif deletion_confirmation == 'n':
+            print("\nStudent's record deletion aborted!")
+            break
+
+        else:
+            print("\nPlease provide correct input. Type 'Y' or 'N'.")
+            continue
 
 
 def exit_program():
     print("Exiting Program...")
-    time.sleep(0.5)
 
 menu_options = {
     1: add_student,
